@@ -1,0 +1,362 @@
+@model AgroProductEcommerce.Controllers.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-cog text-primary me-2"></i>Admin Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Platform overview and management</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("KYCManagement", "Admin")" class="btn btn-warning">
+                        <i class="fas fa-user-check me-2"></i>KYC Management
+                    </a>
+                    <a href="@Url.Action("DisputeManagement", "Admin")" class="btn btn-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Disputes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Users
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.TotalUsers
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-users fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Products
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.TotalProducts
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-box fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Total Revenue
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                $@Model.TotalRevenue.ToString("N2")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Total Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.TotalOrders
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerts and Notifications -->
+    <div class="row mb-4">
+        <div class="col-lg-6 mb-4">
+            <div class="card border-left-warning shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-warning">
+                        <i class="fas fa-user-check me-2"></i>Pending KYC Verifications
+                    </h6>
+                    <span class="badge badge-warning badge-counter">@Model.PendingKYC</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.PendingKYC > 0)
+                    {
+                        <p class="mb-3">There are <strong>@Model.PendingKYC</strong> users waiting for KYC verification.</p>
+                        <a href="@Url.Action("KYCManagement", "Admin")" class="btn btn-warning btn-sm">
+                            Review KYC Applications
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="text-success mb-0">All KYC applications have been processed.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card border-left-danger shadow h-100">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Active Disputes
+                    </h6>
+                    <span class="badge badge-danger badge-counter">@Model.ActiveDisputes</span>
+                </div>
+                <div class="card-body">
+                    @if (Model.ActiveDisputes > 0)
+                    {
+                        <p class="mb-3">There are <strong>@Model.ActiveDisputes</strong> disputes requiring attention.</p>
+                        <a href="@Url.Action("DisputeManagement", "Admin")" class="btn btn-danger btn-sm">
+                            Review Disputes
+                        </a>
+                    }
+                    else
+                    {
+                        <p class="text-success mb-0">No active disputes at this time.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row">
+        <!-- Recent Orders -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                    <a href="@Url.Action("Orders", "Admin")" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Customer</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentOrders.Take(5))
+                                    {
+                                        <tr>
+                                            <td>@order.OrderNumber</td>
+                                            <td>@order.CustomerName</td>
+                                            <td>$@order.TotalAmount.ToString("N2")</td>
+                                            <td>
+                                                <span class="badge badge-@GetStatusBadgeClass(order.Status)">
+                                                    @order.Status
+                                                </span>
+                                            </td>
+                                            <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No recent orders</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Users</h6>
+                    <a href="@Url.Action("UserManagement", "Admin")" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentUsers.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Type</th>
+                                        <th>KYC Status</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.RecentUsers.Take(5))
+                                    {
+                                        <tr>
+                                            <td>@user.FirstName @user.LastName</td>
+                                            <td>@user.Email</td>
+                                            <td>
+                                                <span class="badge badge-@GetUserTypeBadgeClass(user.UserType)">
+                                                    @user.UserType
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-@GetKYCStatusBadgeClass(user.KYCStatus)">
+                                                    @user.KYCStatus
+                                                </span>
+                                            </td>
+                                            <td>@user.RegistrationDate.ToString("MMM dd, yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No recent users</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("KYCManagement", "Admin")" class="btn btn-warning w-100">
+                                <i class="fas fa-user-check me-2"></i>KYC Management
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("DisputeManagement", "Admin")" class="btn btn-danger w-100">
+                                <i class="fas fa-exclamation-triangle me-2"></i>Dispute Resolution
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("Products", "Admin")" class="btn btn-info w-100">
+                                <i class="fas fa-box me-2"></i>Product Management
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <a href="@Url.Action("Analytics", "Admin")" class="btn btn-success w-100">
+                                <i class="fas fa-chart-bar me-2"></i>Analytics
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Auto-refresh dashboard every 5 minutes
+            setInterval(function() {
+                location.reload();
+            }, 300000);
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "warning",
+            OrderStatus.Confirmed => "info",
+            OrderStatus.Processing => "primary",
+            OrderStatus.Shipped => "success",
+            OrderStatus.Delivered => "success",
+            OrderStatus.Cancelled => "danger",
+            OrderStatus.Refunded => "secondary",
+            OrderStatus.Disputed => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetUserTypeBadgeClass(UserType userType)
+    {
+        return userType switch
+        {
+            UserType.Buyer => "primary",
+            UserType.Supplier => "success",
+            UserType.Admin => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetKYCStatusBadgeClass(KYCStatus kycStatus)
+    {
+        return kycStatus switch
+        {
+            KYCStatus.Pending => "warning",
+            KYCStatus.Verified => "success",
+            KYCStatus.Rejected => "danger",
+            KYCStatus.UnderReview => "info",
+            _ => "secondary"
+        };
+    }
+} 

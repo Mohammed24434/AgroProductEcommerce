@@ -1,0 +1,309 @@
+@model AgroProductEcommerce.Models.RFQ
+@{
+    ViewData["Title"] = "Create RFQ";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clipboard-list text-primary me-2"></i>Create Request for Quotation
+                    </h4>
+                    <p class="text-muted mb-0">Specify your requirements and get competitive quotes from suppliers</p>
+                </div>
+                <div class="card-body">
+                    <form asp-action="CreateRFQ" method="post" id="rfqForm">
+                        <div class="row">
+                            <!-- Basic Information -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">Basic Information</h5>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="Title" class="form-label">RFQ Title *</label>
+                                    <input asp-for="Title" class="form-control" placeholder="e.g., Fresh Organic Vegetables Supply" required />
+                                    <span asp-validation-for="Title" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Category" class="form-label">Category *</label>
+                                    <select asp-for="Category" class="form-select" required>
+                                        <option value="">Select Category</option>
+                                        <option value="Fresh">Fresh Produce</option>
+                                        <option value="Dried">Dried Products</option>
+                                        <option value="Fruit">Fruit Products</option>
+                                        <option value="Herbs">Herbs Products</option>
+                                        <option value="Grains">Grains</option>
+                                        <option value="Nuts">Nuts</option>
+                                        <option value="Spices">Spices</option>
+                                        <option value="Tea">Tea</option>
+                                        <option value="Coffee">Coffee</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span asp-validation-for="Category" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="SubCategory" class="form-label">Sub Category</label>
+                                    <input asp-for="SubCategory" class="form-control" placeholder="e.g., Organic, Premium, etc." />
+                                    <span asp-validation-for="SubCategory" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Quantity" class="form-label">Quantity *</label>
+                                    <div class="input-group">
+                                        <input asp-for="Quantity" class="form-control" type="number" min="1" required />
+                                        <select asp-for="Unit" class="form-select" style="max-width: 120px;">
+                                            <option value="kg">kg</option>
+                                            <option value="tons">tons</option>
+                                            <option value="pieces">pieces</option>
+                                            <option value="boxes">boxes</option>
+                                            <option value="bags">bags</option>
+                                            <option value="containers">containers</option>
+                                        </select>
+                                    </div>
+                                    <span asp-validation-for="Quantity" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!-- Budget and Timeline -->
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">Budget & Timeline</h5>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="Budget" class="form-label">Budget (USD)</label>
+                                    <input asp-for="Budget" class="form-control" type="number" step="0.01" min="0" placeholder="e.g., 5000" />
+                                    <span asp-validation-for="Budget" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Deadline" class="form-label">Response Deadline</label>
+                                    <input asp-for="Deadline" class="form-control" type="date" />
+                                    <span asp-validation-for="Deadline" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="DeliveryDate" class="form-label">Required Delivery Date</label>
+                                    <input asp-for="DeliveryDate" class="form-control" type="date" />
+                                    <span asp-validation-for="DeliveryDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="BudgetCurrency" class="form-label">Currency</label>
+                                    <select asp-for="BudgetCurrency" class="form-select">
+                                        <option value="USD">USD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="GBP">GBP</option>
+                                        <option value="JPY">JPY</option>
+                                        <option value="CNY">CNY</option>
+                                        <option value="INR">INR</option>
+                                    </select>
+                                    <span asp-validation-for="BudgetCurrency" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Detailed Description *</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" 
+                                      placeholder="Provide detailed specifications, quality requirements, packaging preferences, etc." required></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Requirements -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">Quality Requirements</h5>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="QualityRequirements" class="form-label">Quality Standards</label>
+                                    <textarea asp-for="QualityRequirements" class="form-control" rows="3" 
+                                              placeholder="e.g., Organic certified, Grade A, ISO standards, etc."></textarea>
+                                    <span asp-validation-for="QualityRequirements" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="Certifications" class="form-label">Required Certifications</label>
+                                    <textarea asp-for="Certifications" class="form-control" rows="2" 
+                                              placeholder="e.g., ISO 9001, HACCP, Organic, Fair Trade, etc."></textarea>
+                                    <span asp-validation-for="Certifications" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <h5 class="text-primary mb-3">Logistics & Packaging</h5>
+                                
+                                <div class="mb-3">
+                                    <label asp-for="PackagingRequirements" class="form-label">Packaging Requirements</label>
+                                    <textarea asp-for="PackagingRequirements" class="form-control" rows="3" 
+                                              placeholder="e.g., Vacuum sealed, Food grade packaging, Specific dimensions, etc."></textarea>
+                                    <span asp-validation-for="PackagingRequirements" class="text-danger"></span>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label asp-for="DeliveryRequirements" class="form-label">Delivery Requirements</label>
+                                    <textarea asp-for="DeliveryRequirements" class="form-control" rows="2" 
+                                              placeholder="e.g., Cold chain, Express delivery, Specific delivery location, etc."></textarea>
+                                    <span asp-validation-for="DeliveryRequirements" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Suggestions -->
+                        <div class="card bg-light mt-4">
+                            <div class="card-header">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-robot text-primary me-2"></i>AI-Powered Suggestions
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Suggested Keywords:</h6>
+                                        <div id="suggestedKeywords" class="mb-3">
+                                            <span class="badge bg-primary me-1">organic</span>
+                                            <span class="badge bg-primary me-1">fresh</span>
+                                            <span class="badge bg-primary me-1">premium</span>
+                                            <span class="badge bg-primary me-1">certified</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Similar RFQs:</h6>
+                                        <div id="similarRFQs" class="mb-3">
+                                            <small class="text-muted">Loading suggestions...</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="@Url.Action("MyRFQs", "Buyer")" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Back to RFQs
+                            </a>
+                            <div>
+                                <button type="button" class="btn btn-outline-primary me-2" id="saveDraftBtn">
+                                    <i class="fas fa-save me-2"></i>Save as Draft
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane me-2"></i>Create RFQ
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle category change to update suggestions
+            $('#Category').change(function() {
+                var category = $(this).val();
+                if (category) {
+                    loadSuggestions(category);
+                }
+            });
+
+            // Handle save as draft
+            $('#saveDraftBtn').click(function() {
+                $('#Status').val('Draft');
+                $('#rfqForm').submit();
+            });
+
+            // Auto-save draft every 30 seconds
+            setInterval(function() {
+                if ($('#Title').val() && $('#Category').val()) {
+                    autoSaveDraft();
+                }
+            }, 30000);
+
+            // Load initial suggestions
+            if ($('#Category').val()) {
+                loadSuggestions($('#Category').val());
+            }
+        });
+
+        function loadSuggestions(category) {
+            $.ajax({
+                url: '@Url.Action("SuggestSearchKeywords", "AIService")',
+                type: 'GET',
+                data: { category: category },
+                success: function(response) {
+                    var keywordsHtml = '';
+                    response.forEach(function(keyword) {
+                        keywordsHtml += '<span class="badge bg-primary me-1">' + keyword + '</span>';
+                    });
+                    $('#suggestedKeywords').html(keywordsHtml);
+                },
+                error: function() {
+                    console.log('Error loading suggestions');
+                }
+            });
+        }
+
+        function autoSaveDraft() {
+            var formData = $('#rfqForm').serialize();
+            formData += '&Status=Draft';
+            
+            $.ajax({
+                url: '@Url.Action("CreateRFQ", "Buyer")',
+                type: 'POST',
+                data: formData,
+                success: function(response) {
+                    if (response.success) {
+                        console.log('Draft auto-saved');
+                    }
+                },
+                error: function() {
+                    console.log('Error auto-saving draft');
+                }
+            });
+        }
+
+        // Form validation
+        $('#rfqForm').submit(function(e) {
+            var isValid = true;
+            
+            // Check required fields
+            if (!$('#Title').val()) {
+                $('#Title').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#Title').removeClass('is-invalid');
+            }
+            
+            if (!$('#Category').val()) {
+                $('#Category').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#Category').removeClass('is-invalid');
+            }
+            
+            if (!$('#Quantity').val() || $('#Quantity').val() <= 0) {
+                $('#Quantity').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#Quantity').removeClass('is-invalid');
+            }
+            
+            if (!$('#Description').val()) {
+                $('#Description').addClass('is-invalid');
+                isValid = false;
+            } else {
+                $('#Description').removeClass('is-invalid');
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+            }
+        });
+    </script>
+} 

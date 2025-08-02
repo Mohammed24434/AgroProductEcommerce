@@ -1,0 +1,551 @@
+﻿@model AgroProductEcommerce.Models.Order
+
+@{
+    ViewData["Title"] = "Checkout - Agricultural Products";
+}
+
+<!-- Checkout Header -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-2">Complete Your Order</h1>
+                <p class="lead text-muted">Secure checkout with multiple payment options</p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="checkout-progress">
+                    <div class="progress-step active" data-step="1">
+                        <div class="step-number">1</div>
+                        <span>Shipping</span>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <div class="step-number">2</div>
+                        <span>Payment</span>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <div class="step-number">3</div>
+                        <span>Review</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Checkout Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Main Checkout Form -->
+            <div class="col-lg-8">
+                <form id="checkoutForm" asp-action="PlaceOrder" method="post">
+                    <!-- Step 1: Shipping Information -->
+                    <div class="checkout-step active" id="step1">
+                        <div class="card checkout-card">
+                            <div class="card-header">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-shipping-fast me-2"></i>Shipping Information
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="CustomerName" class="form-control" placeholder="Full Name" required />
+                                            <label asp-for="CustomerName">Full Name</label>
+                                            <span asp-validation-for="CustomerName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input asp-for="Email" type="email" class="form-control" placeholder="Email" required />
+                                            <label asp-for="Email">Email Address</label>
+                                            <span asp-validation-for="Email" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <input asp-for="PhoneNumber" class="form-control" placeholder="Phone Number" required />
+                                            <label asp-for="PhoneNumber">Phone Number</label>
+                                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-floating">
+                                            <textarea asp-for="ShippingAddress" class="form-control" placeholder="Shipping Address" style="height: 100px" required></textarea>
+                                            <label asp-for="ShippingAddress">Shipping Address</label>
+                                            <span asp-validation-for="ShippingAddress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <input asp-for="ShippingCity" type="text" class="form-control" placeholder="City" required />
+                                            <label asp-for="ShippingCity">City</label>
+                                            <span asp-validation-for="ShippingCity" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <input asp-for="ShippingState" type="text" class="form-control" placeholder="State" required />
+                                            <label asp-for="ShippingState">State</label>
+                                            <span asp-validation-for="ShippingState" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-floating">
+                                            <input asp-for="ShippingPostalCode" type="text" class="form-control" placeholder="ZIP Code" required />
+                                            <label asp-for="ShippingPostalCode">ZIP Code</label>
+                                            <span asp-validation-for="ShippingPostalCode" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Shipping Options -->
+                                <div class="mt-4">
+                                    <h6 class="mb-3">Shipping Options</h6>
+                                    <div class="shipping-options">
+                                        <div class="shipping-option active">
+                                            <input type="radio" name="shipping" value="standard" checked>
+                                            <div class="option-content">
+                                                <div class="option-header">
+                                                    <span class="option-name">Standard Shipping</span>
+                                                    <span class="option-price">$5.99</span>
+                                                </div>
+                                                <span class="option-desc">3-5 business days</span>
+                                            </div>
+                                        </div>
+                                        <div class="shipping-option">
+                                            <input type="radio" name="shipping" value="express">
+                                            <div class="option-content">
+                                                <div class="option-header">
+                                                    <span class="option-name">Express Shipping</span>
+                                                    <span class="option-price">$12.99</span>
+                                                </div>
+                                                <span class="option-desc">1-2 business days</span>
+                                            </div>
+                                        </div>
+                                        <div class="shipping-option">
+                                            <input type="radio" name="shipping" value="overnight">
+                                            <div class="option-content">
+                                                <div class="option-header">
+                                                    <span class="option-name">Overnight Shipping</span>
+                                                    <span class="option-price">$24.99</span>
+                                                </div>
+                                                <span class="option-desc">Next business day</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Payment Information -->
+                    <div class="checkout-step" id="step2">
+                        <div class="card checkout-card">
+                            <div class="card-header">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-credit-card me-2"></i>Payment Information
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <!-- Payment Methods -->
+                                <div class="payment-methods mb-4">
+                                    <h6 class="mb-3">Payment Method</h6>
+                                    <div class="payment-options">
+                                        <div class="payment-option active">
+                                            <input type="radio" name="payment" value="card" checked>
+                                            <div class="option-content">
+                                                <i class="fas fa-credit-card"></i>
+                                                <span>Credit/Debit Card</span>
+                                            </div>
+                                        </div>
+                                        <div class="payment-option">
+                                            <input type="radio" name="payment" value="paypal">
+                                            <div class="option-content">
+                                                <i class="fab fa-paypal"></i>
+                                                <span>PayPal</span>
+                                            </div>
+                                        </div>
+                                        <div class="payment-option">
+                                            <input type="radio" name="payment" value="apple">
+                                            <div class="option-content">
+                                                <i class="fab fa-apple-pay"></i>
+                                                <span>Apple Pay</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Card Details -->
+                                <div id="cardDetails" class="card-details">
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" placeholder="Card Number" required />
+                                                <label>Card Number</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" placeholder="MM/YY" required />
+                                                <label>Expiry Date</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" placeholder="CVV" required />
+                                                <label>CVV</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-12">
+                                            <div class="form-floating">
+                                                <input type="text" class="form-control" placeholder="Cardholder Name" required />
+                                                <label>Cardholder Name</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Review Order -->
+                    <div class="checkout-step" id="step3">
+                        <div class="card checkout-card">
+                            <div class="card-header">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-clipboard-check me-2"></i>Review Your Order
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="order-review">
+                                    <div class="review-section">
+                                        <h6>Shipping Information</h6>
+                                        <div id="reviewShipping" class="review-content">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <div class="review-section">
+                                        <h6>Payment Method</h6>
+                                        <div id="reviewPayment" class="review-content">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <div class="review-section">
+                                        <h6>Order Items</h6>
+                                        <div id="reviewItems" class="review-content">
+                                            <!-- Will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Buttons -->
+                    <div class="checkout-navigation mt-4">
+                        <div class="d-flex justify-content-between">
+                            <button type="button" class="btn btn-outline-primary" id="prevBtn" onclick="previousStep()" style="display: none;">
+                                <i class="fas fa-arrow-left me-2"></i>Previous
+                            </button>
+                            <button type="button" class="btn btn-primary" id="nextBtn" onclick="nextStep()">
+                                Next<i class="fas fa-arrow-right ms-2"></i>
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg" id="placeOrderBtn" style="display: none;">
+                                <i class="fas fa-lock me-2"></i>Place Order Securely
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-4">
+                <div class="order-summary-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-receipt me-2"></i>Order Summary
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="order-items">
+                            <!-- Order items will be populated here -->
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="order-totals">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span>$@ViewBag.CartTotal.ToString("F2")</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Shipping:</span>
+                                <span id="shippingCost">$5.99</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Tax:</span>
+                                <span id="taxAmount">$@((ViewBag.CartTotal * 0.08m).ToString("F2"))</span>
+                            </div>
+                            <hr>
+                            <div class="total-row total-final">
+                                <span>Total:</span>
+                                <span id="finalTotal">$@((ViewBag.CartTotal * 1.08m + 5.99m).ToString("F2"))</span>
+                            </div>
+                        </div>
+                        
+                        <!-- Security Badges -->
+                        <div class="security-badges mt-4">
+                            <div class="security-item">
+                                <i class="fas fa-shield-alt text-success"></i>
+                                <span>SSL Secured</span>
+                            </div>
+                            <div class="security-item">
+                                <i class="fas fa-lock text-primary"></i>
+                                <span>256-bit Encryption</span>
+                            </div>
+                            <div class="security-item">
+                                <i class="fas fa-credit-card text-info"></i>
+                                <span>PCI Compliant</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        var currentStep = 1;
+        var totalSteps = 3;
+
+        // Initialize checkout
+        document.addEventListener('DOMContentLoaded', function() {
+            updateProgressBar();
+            loadOrderSummary();
+        });
+
+        // Next step
+        function nextStep() {
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateStepDisplay();
+                    updateProgressBar();
+                }
+            }
+        }
+
+        // Previous step
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateStepDisplay();
+                updateProgressBar();
+            }
+        }
+
+        // Update step display
+        function updateStepDisplay() {
+            // Hide all steps
+            document.querySelectorAll('.checkout-step').forEach(function(step) {
+                step.classList.remove('active');
+            });
+            
+            // Show current step
+            document.getElementById('step' + currentStep).classList.add('active');
+            
+            // Update navigation buttons
+            var prevBtn = document.getElementById('prevBtn');
+            var nextBtn = document.getElementById('nextBtn');
+            var placeOrderBtn = document.getElementById('placeOrderBtn');
+            
+            if (currentStep === 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'inline-block';
+                placeOrderBtn.style.display = 'none';
+            } else if (currentStep === totalSteps) {
+                prevBtn.style.display = 'inline-block';
+                nextBtn.style.display = 'none';
+                placeOrderBtn.style.display = 'inline-block';
+                populateReviewStep();
+            } else {
+                prevBtn.style.display = 'inline-block';
+                nextBtn.style.display = 'inline-block';
+                placeOrderBtn.style.display = 'none';
+            }
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            document.querySelectorAll('.progress-step').forEach(function(step, index) {
+                var stepNumber = index + 1;
+                if (stepNumber <= currentStep) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+        }
+
+        // Validate current step
+        function validateCurrentStep() {
+            var currentStepElement = document.getElementById('step' + currentStep);
+            var inputs = currentStepElement.querySelectorAll('input[required], textarea[required]');
+            var isValid = true;
+            
+            inputs.forEach(function(input) {
+                if (!input.value.trim()) {
+                    input.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    input.classList.remove('is-invalid');
+                }
+            });
+            
+            if (!isValid) {
+                showToast('Please fill in all required fields', 'error');
+            }
+            
+            return isValid;
+        }
+
+        // Populate review step
+        function populateReviewStep() {
+            // Shipping review
+            var shippingInfo = document.getElementById('reviewShipping');
+            var customerName = document.querySelector('input[asp-for="CustomerName"]').value;
+            var email = document.querySelector('input[asp-for="Email"]').value;
+            var phone = document.querySelector('input[asp-for="PhoneNumber"]').value;
+            var address = document.querySelector('textarea[asp-for="ShippingAddress"]').value;
+            
+            shippingInfo.innerHTML = `
+                <p><strong>${customerName}</strong></p>
+                <p>${email}</p>
+                <p>${phone}</p>
+                <p>${address}</p>
+            `;
+            
+            // Payment review
+            var paymentInfo = document.getElementById('reviewPayment');
+            var selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+            var paymentMethods = {
+                'card': 'Credit/Debit Card',
+                'paypal': 'PayPal',
+                'apple': 'Apple Pay'
+            };
+            
+            paymentInfo.innerHTML = `<p>${paymentMethods[selectedPayment]}</p>`;
+            
+            // Items review
+            var itemsInfo = document.getElementById('reviewItems');
+            itemsInfo.innerHTML = '<p>Items will be loaded from cart...</p>';
+        }
+
+        // Load order summary
+        function loadOrderSummary() {
+            // This would typically load from the server
+            var orderItems = document.querySelector('.order-items');
+            orderItems.innerHTML = `
+                <div class="order-item">
+                    <div class="item-image">
+                        <img src="/images/placeholder.jpg" alt="Product">
+                    </div>
+                    <div class="item-details">
+                        <h6>Sample Product</h6>
+                        <p class="text-muted">Qty: 1</p>
+                    </div>
+                    <div class="item-price">$29.99</div>
+                </div>
+            `;
+        }
+
+        // Shipping option selection
+        document.querySelectorAll('.shipping-option input').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.shipping-option').forEach(function(option) {
+                    option.classList.remove('active');
+                });
+                this.closest('.shipping-option').classList.add('active');
+                updateShippingCost();
+            });
+        });
+
+        // Payment option selection
+        document.querySelectorAll('.payment-option input').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('.payment-option').forEach(function(option) {
+                    option.classList.remove('active');
+                });
+                this.closest('.payment-option').classList.add('active');
+            });
+        });
+
+        // Update shipping cost
+        function updateShippingCost() {
+            var selectedShipping = document.querySelector('input[name="shipping"]:checked').value;
+            var shippingCosts = {
+                'standard': 5.99,
+                'express': 12.99,
+                'overnight': 24.99
+            };
+            
+            var shippingCost = shippingCosts[selectedShipping];
+            document.getElementById('shippingCost').textContent = '$' + shippingCost.toFixed(2);
+            
+            // Update final total
+            var subtotal = @ViewBag.CartTotal;
+            var tax = subtotal * 0.08;
+            var finalTotal = subtotal + tax + shippingCost;
+            document.getElementById('finalTotal').textContent = '$' + finalTotal.toFixed(2);
+        }
+
+        // Form submission
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Show loading state
+            var submitBtn = document.getElementById('placeOrderBtn');
+            var originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing...';
+            submitBtn.disabled = true;
+            
+            // Simulate processing
+            setTimeout(function() {
+                // Submit the form
+                document.getElementById('checkoutForm').submit();
+            }, 2000);
+        });
+
+        // Toast notification function
+        function showToast(message, type) {
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type + ' show';
+            
+            var iconClass = type === 'success' ? 'check-circle text-success' : 
+                           type === 'error' ? 'exclamation-circle text-danger' : 
+                           type === 'warning' ? 'exclamation-triangle text-warning' : 
+                           'info-circle text-info';
+            
+            toast.innerHTML = '<div class="d-flex align-items-center">' +
+                '<i class="fas fa-' + iconClass + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '<button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>' +
+                '</div>';
+            
+            var container = document.getElementById('toastContainer');
+            if (container) {
+                container.appendChild(toast);
+                
+                setTimeout(function() {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 5000);
+            }
+        }
+    </script>
+}

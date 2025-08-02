@@ -1,0 +1,259 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">
+                    Discover Fresh Agricultural Products
+                </h1>
+                <p class="lead mb-4">
+                    Explore our premium collection of fresh produce and agricultural products. 
+                    From organic vegetables to farm-fresh goods, find quality products with us.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Shop Now
+                    </a>
+                    <a href="#featured" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-star me-2"></i>Featured
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <img src="~/images/hero-fashion.jpg" alt="Agricultural Products" class="img-fluid rounded-3 shadow-lg" 
+                         style="max-height: 400px; object-fit: cover;" onerror="this.style.display='none'">
+                    <div class="hero-placeholder bg-light rounded-3 shadow-lg d-flex align-items-center justify-content-center" 
+                         style="height: 400px; display: none;">
+<div class="text-center">
+                            <i class="fas fa-seedling fa-4x text-primary mb-3"></i>
+                            <h3>Fresh Agricultural Products</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="text-center p-4">
+                    <div class="bg-primary bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-shipping-fast fa-2x text-white"></i>
+                    </div>
+                    <h4>Fast Delivery</h4>
+                    <p class="text-muted">Free shipping on orders over $50. Get your items delivered within 1-2 business days.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-4">
+                    <div class="bg-success bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-shield-alt fa-2x text-white"></i>
+                    </div>
+                    <h4>Secure Payment</h4>
+                    <p class="text-muted">Your payment information is protected with bank-level security encryption.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-4">
+                    <div class="bg-warning bg-gradient rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-undo fa-2x text-white"></i>
+                    </div>
+                    <h4>Easy Returns</h4>
+                    <p class="text-muted">Not satisfied? Return your items within 30 days for a full refund.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section id="featured" class="py-5 bg-light">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Featured Products</h2>
+            <p class="lead text-muted">Discover our most popular agricultural products</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="product-card h-100">
+                    <div class="position-relative">
+                        <img src="~/images/Madhi.jpg" class="card-img-top" alt="Madhicho">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-danger">New</span>
+                        </div>
+                    </div>
+                    <div class="product-card-body">
+                        <h5 class="card-title">Madhicho</h5>
+                        <p class="card-text">Premium quality fresh agricultural products.</p>
+                        <div class="product-category">Fresh</div>
+                        <div class="product-price">$24.99</div>
+                        <a href="@Url.Action("Details", "Products", new { id = 1 })" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="product-card h-100">
+                    <div class="position-relative">
+                        <img src="~/images/Hirna.jpg" class="card-img-top" alt="Hirna">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-success">Popular</span>
+                        </div>
+                    </div>
+                    <div class="product-card-body">
+                        <h5 class="card-title">Hirna</h5>
+                        <p class="card-text">Premium quality fresh products.</p>
+                        <div class="product-category">Fresh</div>
+                        <div class="product-price">$59.99</div>
+                        <a href="@Url.Action("Details", "Products", new { id = 2 })" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="product-card h-100">
+                    <div class="position-relative">
+                        <img src="~/images/Bahirdar.jpg" class="card-img-top" alt="Bahirdar">
+                    </div>
+                    <div class="product-card-body">
+                        <h5 class="card-title">Bahirdar</h5>
+                        <p class="card-text">Premium quality fresh products.</p>
+                        <div class="product-category">Fresh</div>
+                        <div class="product-price">$39.99</div>
+                        <a href="@Url.Action("Details", "Products", new { id = 3 })" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="product-card h-100">
+                    <div class="position-relative">
+                        <img src="~/images/BasmatiGreen2.jpg" class="card-img-top" alt="Basmati Green">
+                        <div class="position-absolute top-0 end-0 m-2">
+                            <span class="badge bg-info">Limited</span>
+                        </div>
+                    </div>
+                    <div class="product-card-body">
+                        <h5 class="card-title">Basmati Green</h5>
+                        <p class="card-text">Premium quality dried products.</p>
+                        <div class="product-category">Dried</div>
+                        <div class="product-price">$29.99</div>
+                        <a href="@Url.Action("Details", "Products", new { id = 4 })" class="btn btn-primary w-100">
+                            <i class="fas fa-eye me-2"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+</div>
+        
+        <div class="text-center mt-5">
+            <a href="@Url.Action("Index", "Products")" class="btn btn-outline-primary btn-lg">
+                <i class="fas fa-arrow-right me-2"></i>View All Products
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 text-center">
+                <h3 class="mb-3">Stay Updated</h3>
+                <p class="text-muted mb-4">Subscribe to our newsletter for the latest products and exclusive offers.</p>
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" placeholder="Enter your email" id="newsletterEmail">
+                    <button class="btn btn-primary" type="button" onclick="subscribeNewsletter()">
+                        <i class="fas fa-paper-plane me-2"></i>Subscribe
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Show placeholder if hero image fails to load
+        document.addEventListener('DOMContentLoaded', function() {
+            var heroImg = document.querySelector('.hero-section img');
+            var placeholder = document.querySelector('.hero-placeholder');
+            
+            if (heroImg) {
+                heroImg.addEventListener('error', function() {
+                    this.style.display = 'none';
+                    if (placeholder) placeholder.style.display = 'flex';
+                });
+            }
+        });
+
+        // Newsletter subscription
+        function subscribeNewsletter() {
+            var email = document.getElementById('newsletterEmail').value;
+            if (email && email.includes('#')) {
+                showToast('Thank you for subscribing!', 'success');
+                document.getElementById('newsletterEmail').value = '';
+            } else {
+                showToast('Please enter a valid email address.', 'error');
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type) {
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type + ' show';
+            
+            var iconClass = type === 'success' ? 'check-circle text-success' : 'exclamation-circle text-danger';
+            toast.innerHTML = '<div class="d-flex align-items-center">' +
+                '<i class="fas fa-' + iconClass + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '<button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>' +
+                '</div>';
+            
+            var container = document.getElementById('toastContainer');
+            if (container) {
+                container.appendChild(toast);
+                
+                setTimeout(function() {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 5000);
+            }
+        }
+
+        // Smooth scrolling for anchor links
+        var anchors = document.querySelectorAll('a[href^="#"]');
+        for (var i = 0; i < anchors.length; i++) {
+            anchors[i].addEventListener('click', function (e) {
+                e.preventDefault();
+                var target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        }
+    </script>
+}

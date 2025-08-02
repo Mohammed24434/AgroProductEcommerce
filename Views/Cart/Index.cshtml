@@ -1,0 +1,751 @@
+﻿@model IEnumerable<AgroProductEcommerce.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var total = Model.Sum(item => item.UnitPrice * item.Quantity);
+    var itemCount = Model.Sum(item => item.Quantity);
+    var bulkItems = Model.Where(item => item.IsBulkOrder).Count();
+    var tradeAssuranceItems = Model.Where(item => item.Product?.TradeAssuranceEligible == true).Count();
+}
+
+@Html.AntiForgeryToken()
+
+<!-- Page Header -->
+<section class="py-5 bg-gradient-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold mb-3">
+                    <i class="fas fa-shopping-cart me-3"></i>Shopping Cart
+                </h1>
+                <p class="lead mb-4">Review your agricultural products and proceed to secure checkout</p>
+                <div class="d-flex gap-3">
+                    @if (bulkItems > 0)
+                    {
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-tags me-1"></i>@bulkItems Bulk Orders
+                        </span>
+                    }
+                    @if (tradeAssuranceItems > 0)
+                    {
+                        <span class="badge bg-light text-dark">
+                            <i class="fas fa-shield-alt me-1"></i>@tradeAssuranceItems Trade Assurance
+                        </span>
+                    }
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-globe me-1"></i>Global Shipping
+                    </span>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <div class="d-flex align-items-center justify-content-lg-end">
+                    <span class="text-white-50 me-3">@itemCount items</span>
+                    <div class="badge bg-light text-dark fs-6">Total: $@total.ToString("F2")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Success/Error Messages -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>@TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+<!-- Cart Content -->
+<section class="py-5">
+    <div class="container">
+    @if (Model.Any())
+    {
+            <div class="row">
+                <!-- Cart Items -->
+                <div class="col-lg-8">
+                    <div class="cart-items-container">
+                        @foreach (var item in Model)
+                        {
+                            <div class="cart-item card mb-3 shadow-sm" data-product-id="@item.Product.Id" data-price="@item.UnitPrice" data-item-id="@item.Id">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" 
+                                                 class="img-fluid rounded" onerror="this.src='/images/placeholder.jpg'">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h5 class="mb-1">@item.Product.Name</h5>
+                                            <p class="text-muted mb-1 small">@item.Product.Description</p>
+                                            <div class="product-category mb-2">
+                                                <span class="badge bg-primary me-1">@item.Product.Category</span>
+                                                @if (!string.IsNullOrEmpty(item.Product.SubCategory))
+                                                {
+                                                    <span class="badge bg-secondary">@item.Product.SubCategory</span>
+                                                }
+                                            </div>
+                                            
+                                            <!-- Product Specifications -->
+                                            <div class="product-specs mb-2">
+                                                @if (!string.IsNullOrEmpty(item.Product.CountryOfOrigin))
+                                                {
+                                                    <small class="text-muted me-3">
+                                                        <i class="fas fa-globe me-1"></i>@item.Product.CountryOfOrigin
+                                                    </small>
+                                                }
+                                                @if (item.Product.Weight.HasValue)
+                                                {
+                                                    <small class="text-muted">
+                                                        <i class="fas fa-weight-hanging me-1"></i>@item.Product.Weight.Value.ToString("F1") @item.Product.WeightUnit
+                                                    </small>
+                                                }
+                                            </div>
+                                            
+                                            <!-- Cart Item Notes -->
+                                            @if (!string.IsNullOrEmpty(item.Notes))
+                                            {
+                                                <div class="cart-item-notes mb-2">
+                                                    <small class="text-info">
+                                                        <i class="fas fa-info-circle me-1"></i>@item.Notes
+                                                    </small>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="product-price">
+                                                <div class="fw-bold text-primary">$@item.UnitPrice.ToString("F2")</div>
+                                                @if (item.Product.BulkPrice.HasValue && item.Quantity >= item.Product.BulkQuantity)
+                                                {
+                                                    <small class="text-success">
+                                                        <i class="fas fa-tags me-1"></i>Bulk Pricing
+                                                    </small>
+                                                }
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="quantity-control">
+                                                <button class="quantity-btn" onclick="updateCartQuantity(@item.Id, -1)" 
+                                                        @(item.Quantity <= 1 ? "disabled" : "")>
+                                                    <i class="fas fa-minus"></i>
+                                                </button>
+                                                <input type="number" class="quantity-input" value="@item.Quantity" 
+                                                       min="@(item.Product.MinimumOrderQuantity ?? 1)" 
+                                                       max="@(item.Product.MaximumOrderQuantity ?? 99)" 
+                                                       onchange="updateCartQuantity(@item.Id, 0, this.value)">
+                                                <button class="quantity-btn" onclick="updateCartQuantity(@item.Id, 1)">
+                                                    <i class="fas fa-plus"></i>
+                                                </button>
+                                            </div>
+                                            @if (item.Product.MinimumOrderQuantity.HasValue && item.Product.MinimumOrderQuantity.Value > 1)
+                                            {
+                                                <small class="text-muted d-block mt-1">
+                                                    Min: @item.Product.MinimumOrderQuantity.Value
+                                                </small>
+                                            }
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="item-total fw-bold">$@((item.UnitPrice * item.Quantity).ToString("F2"))</div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="dropdown">
+                                                <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu">
+                                                    <li><a class="dropdown-item" href="#" onclick="saveForLater(@item.Id)">
+                                                        <i class="fas fa-bookmark me-2"></i>Save for Later
+                                                    </a></li>
+                                                    <li><a class="dropdown-item" href="@Url.Action("Details", "Products", new { id = item.Product.Id })">
+                                                        <i class="fas fa-eye me-2"></i>View Details
+                                                    </a></li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li><a class="dropdown-item text-danger" href="#" onclick="removeFromCart(@item.Id)">
+                                                        <i class="fas fa-trash me-2"></i>Remove
+                                                    </a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- B2B Features -->
+                                    @if (item.IsBulkOrder || item.Product.TradeAssuranceEligible)
+                                    {
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <div class="b2b-features">
+                                                    @if (item.IsBulkOrder)
+                                                    {
+                                                        <span class="badge bg-success me-2">
+                                                            <i class="fas fa-industry me-1"></i>Bulk Order
+                                                        </span>
+                                                    }
+                                                    @if (item.Product.TradeAssuranceEligible)
+                                                    {
+                                                        <span class="badge bg-info me-2">
+                                                            <i class="fas fa-shield-alt me-1"></i>Trade Assurance
+                                                        </span>
+                                                    }
+                                                    @if (!string.IsNullOrEmpty(item.Product.QualityGrade))
+                                                    {
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-crown me-1"></i>@item.Product.QualityGrade
+                                                        </span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    
+                    <!-- Cart Actions -->
+                    <div class="cart-actions mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-secondary" onclick="clearCart()">
+                                    <i class="fas fa-trash me-2"></i>Clear Cart
+                                </button>
+                                <a href="@Url.Action("Index", "Products")" class="btn btn-outline-primary">
+                                    <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+                                </a>
+                            </div>
+                            <div class="text-muted">
+                                <small>Last updated: @DateTime.Now.ToString("MMM dd, yyyy HH:mm")</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cart Summary -->
+                <div class="col-lg-4">
+                    <div class="cart-summary card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0">
+                                <i class="fas fa-receipt me-2"></i>Order Summary
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Subtotal (@itemCount items):</span>
+                                <span>$@total.ToString("F2")</span>
+                            </div>
+                            
+                            @if (bulkItems > 0)
+                            {
+                                <div class="summary-item d-flex justify-content-between mb-2">
+                                    <span>Bulk Discount:</span>
+                                    <span class="text-success">-$@(Model.Where(i => i.IsBulkOrder).Sum(i => (i.Product.Price - i.UnitPrice) * i.Quantity).ToString("F2"))</span>
+                                </div>
+                            }
+                            
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Shipping:</span>
+                                <span class="text-success">Free</span>
+                            </div>
+                            
+                            <div class="summary-item d-flex justify-content-between mb-2">
+                                <span>Tax:</span>
+                                <span>$@((total * 0.08m).ToString("F2"))</span>
+                            </div>
+                            
+                            @if (tradeAssuranceItems > 0)
+                            {
+                                <div class="summary-item d-flex justify-content-between mb-2">
+                                    <span>Trade Assurance:</span>
+                                    <span class="text-info">Included</span>
+                                </div>
+                            }
+                            
+                            <hr>
+                            
+                            <div class="summary-item d-flex justify-content-between mb-4">
+                                <strong>Total:</strong>
+                                <strong class="fs-5">$@((total * 1.08m).ToString("F2"))</strong>
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <a href="@Url.Action("Index", "Checkout")" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+                                </a>
+                                <button class="btn btn-outline-success" onclick="createBulkOrder()">
+                                    <i class="fas fa-industry me-2"></i>Create Bulk Order
+                                </button>
+                            </div>
+                            
+                            <!-- Security Badges -->
+                            <div class="security-badges mt-3 text-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-lock me-1"></i>Secure Checkout
+                                    <i class="fas fa-shield-alt me-2 ms-2"></i>Trade Assurance
+                                    <i class="fas fa-globe me-2"></i>Global Shipping
+                                </small>
+                            </div>
+                            
+                            <!-- Promo Code -->
+                            <div class="mt-4">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Promo code" id="promoCode">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="applyPromoCode()">
+                                        Apply
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    }
+    else
+    {
+            <!-- Empty Cart State -->
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-shopping-cart fa-4x text-muted mb-4"></i>
+                <h3>Your cart is empty</h3>
+                <p class="text-muted mb-4">Looks like you haven't added any items to your cart yet.</p>
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="@Url.Action("Index", "Products")" class="btn btn-primary btn-lg">
+                        <i class="fas fa-shopping-bag me-2"></i>Start Shopping
+                    </a>
+                    <a href="@Url.Action("Index", "Buyer")" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-file-contract me-2"></i>Create RFQ
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Recently Viewed Products -->
+@if (Model.Any())
+{
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h3 class="mb-4">
+                <i class="fas fa-eye me-2"></i>You might also like
+            </h3>
+            <div class="row g-4">
+                <!-- Placeholder for recently viewed products -->
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-card h-100">
+                        <div class="position-relative">
+                            <img src="~/images/Madhi.jpg" class="card-img-top" alt="Madhicho">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-danger">New</span>
+                            </div>
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="card-title">Madhicho</h5>
+                            <p class="card-text">Premium quality fresh products.</p>
+                            <div class="product-category">Fresh</div>
+                            <div class="product-price">$24.99</div>
+                            <button class="btn btn-primary w-100" onclick="addToCart(1, 1)">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-card h-100">
+                        <div class="position-relative">
+                            <img src="~/images/Hirna.jpg" class="card-img-top" alt="Hirna">
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="card-title">Hirna</h5>
+                            <p class="card-text">Premium quality fresh products.</p>
+                            <div class="product-category">Fresh</div>
+                            <div class="product-price">$59.99</div>
+                            <button class="btn btn-primary w-100" onclick="addToCart(2, 1)">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-card h-100">
+                        <div class="position-relative">
+                            <img src="~/images/Bahirdar.jpg" class="card-img-top" alt="Bahirdar">
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="card-title">Bahirdar</h5>
+                            <p class="card-text">Premium quality fresh products.</p>
+                            <div class="product-category">Fresh</div>
+                            <div class="product-price">$39.99</div>
+                            <button class="btn btn-primary w-100" onclick="addToCart(3, 1)">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <div class="product-card h-100">
+                        <div class="position-relative">
+                            <img src="~/images/BasmatiGreen2.jpg" class="card-img-top" alt="Basmati Green">
+                        </div>
+                        <div class="product-card-body">
+                            <h5 class="card-title">Basmati Green</h5>
+                            <p class="card-text">Premium quality dried products.</p>
+                            <div class="product-category">Dried</div>
+                            <div class="product-price">$29.99</div>
+                            <button class="btn btn-primary w-100" onclick="addToCart(4, 1)">
+                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script>
+        // Update cart quantity
+        function updateCartQuantity(itemId, delta, newValue = null) {
+            const quantity = newValue || (parseInt(document.querySelector(`input[onchange*="${itemId}"]`).value) + delta);
+            
+            if (quantity < 1) {
+                showToast('Quantity cannot be less than 1', 'error');
+                return;
+            }
+            
+            // Show loading
+            const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (cartItem) showLoading(cartItem);
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('id', itemId);
+            formData.append('quantity', quantity);
+            
+            // Send AJAX request
+            fetch('/Cart/UpdateCart', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update the quantity input
+                    document.querySelector(`input[onchange*="${itemId}"]`).value = quantity;
+                    
+                    // Update item total
+                    const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+                    const price = parseFloat(cartItem.dataset.price);
+                    const total = (price * quantity).toFixed(2);
+                    cartItem.querySelector('.item-total').textContent = `$${total}`;
+                    
+                    // Update cart summary
+                    updateCartSummary();
+                    
+                    showToast(data.message, 'success');
+                    
+                    // Update cart badge if available
+                    if (data.cartItemCount !== undefined) {
+                        updateCartBadge(data.cartItemCount);
+                    }
+                } else {
+                    showToast(data.message || 'Failed to update cart.', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                if (cartItem) hideLoading(cartItem);
+            });
+        }
+        
+        // Remove from cart
+        function removeFromCart(itemId) {
+            if (!confirm('Are you sure you want to remove this item from your cart?')) {
+                return;
+            }
+            
+            const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (cartItem) showLoading(cartItem);
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('id', itemId);
+            
+            // Send AJAX request
+            fetch('/Cart/RemoveFromCart', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Animate removal
+                    cartItem.style.transform = 'translateX(100%)';
+                    cartItem.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        cartItem.remove();
+                        updateCartSummary();
+                        
+                        // Check if cart is empty
+                        if (document.querySelectorAll('.cart-item').length === 0) {
+                            location.reload(); // Reload to show empty state
+                        }
+                    }, 300);
+                    
+                    showToast(data.message, 'success');
+                    
+                    // Update cart badge if available
+                    if (data.cartItemCount !== undefined) {
+                        updateCartBadge(data.cartItemCount);
+                    }
+                } else {
+                    showToast(data.message || 'Failed to remove item.', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                if (cartItem) hideLoading(cartItem);
+            });
+        }
+        
+        // Clear cart
+        function clearCart() {
+            if (!confirm('Are you sure you want to clear your entire cart?')) {
+                return;
+            }
+            
+            // Create form data
+            const formData = new FormData();
+            
+            // Send AJAX request
+            fetch('/Cart/ClearCart', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => {
+                        location.reload(); // Reload to show empty state
+                    }, 1000);
+                    
+                    // Update cart badge if available
+                    if (data.cartItemCount !== undefined) {
+                        updateCartBadge(data.cartItemCount);
+                    }
+                } else {
+                    showToast(data.message || 'Failed to clear cart.', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('An error occurred. Please try again.', 'error');
+            });
+        }
+        
+        // Save for later
+        function saveForLater(itemId) {
+            const cartItem = document.querySelector(`[data-item-id="${itemId}"]`);
+            if (cartItem) showLoading(cartItem);
+            
+            // Create form data
+            const formData = new FormData();
+            formData.append('id', itemId);
+            
+            // Send AJAX request
+            fetch('/Cart/SaveForLater', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    // Animate the item to indicate it's saved
+                    cartItem.style.opacity = '0.6';
+                    cartItem.style.backgroundColor = '#f8f9fa';
+                } else {
+                    showToast(data.message || 'Failed to save item.', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('An error occurred. Please try again.', 'error');
+            })
+            .finally(() => {
+                if (cartItem) hideLoading(cartItem);
+            });
+        }
+        
+        // Create bulk order
+        function createBulkOrder() {
+            // Redirect to bulk order creation page
+            window.location.href = '/Buyer/CreateRFQ';
+        }
+        
+        // Update cart summary
+        function updateCartSummary() {
+            const cartItems = document.querySelectorAll('.cart-item');
+            let subtotal = 0;
+            let itemCount = 0;
+            
+            cartItems.forEach(item => {
+                const price = parseFloat(item.dataset.price);
+                const quantity = parseInt(item.querySelector('.quantity-input').value);
+                subtotal += price * quantity;
+                itemCount += quantity;
+            });
+            
+            const tax = subtotal * 0.08;
+            const total = subtotal + tax;
+            
+            // Update summary display
+            document.querySelector('.summary-item:first-child span:last-child').textContent = `$${subtotal.toFixed(2)}`;
+            document.querySelector('.summary-item:last-child strong:last-child').textContent = `$${total.toFixed(2)}`;
+            
+            // Update header
+            document.querySelector('.badge.bg-light').textContent = `Total: $${total.toFixed(2)}`;
+        }
+        
+        // Apply promo code
+        function applyPromoCode() {
+            const promoCode = document.getElementById('promoCode').value.trim();
+            
+            if (!promoCode) {
+                showToast('Please enter a promo code', 'error');
+                return;
+            }
+            
+            // Simulate promo code validation
+            if (promoCode.toLowerCase() === 'save10') {
+                showToast('Promo code applied! 10% discount added.', 'success');
+                document.getElementById('promoCode').value = '';
+                document.getElementById('promoCode').disabled = true;
+            } else if (promoCode.toLowerCase() === 'bulk20') {
+                showToast('Bulk order promo applied! 20% discount for bulk orders.', 'success');
+                document.getElementById('promoCode').value = '';
+                document.getElementById('promoCode').disabled = true;
+            } else {
+                showToast('Invalid promo code', 'error');
+            }
+        }
+        
+        // Update cart badge
+        function updateCartBadge(count) {
+            const cartBadge = document.querySelector('.navbar .badge');
+            if (cartBadge) {
+                cartBadge.textContent = count;
+                cartBadge.style.display = count > 0 ? 'block' : 'none';
+            }
+        }
+        
+        // Add to cart from recommendations
+        function addToCart(productId, quantity) {
+            // Create form data
+            const formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('quantity', quantity);
+            
+            // Send AJAX request
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => {
+                        location.reload(); // Reload to show updated cart
+                    }, 1000);
+                } else {
+                    showToast(data.message || 'Failed to add product to cart.', 'error');
+                }
+            })
+            .catch(error => {
+                showToast('An error occurred. Please try again.', 'error');
+            });
+        }
+        
+        // Show loading state
+        function showLoading(element) {
+            element.style.opacity = '0.6';
+            element.style.pointerEvents = 'none';
+        }
+        
+        // Hide loading state
+        function hideLoading(element) {
+            element.style.opacity = '1';
+            element.style.pointerEvents = 'auto';
+        }
+        
+        // Toast notification function
+        function showToast(message, type) {
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type + ' show';
+            
+            var iconClass = type === 'success' ? 'check-circle text-success' : 
+                           type === 'error' ? 'exclamation-circle text-danger' : 
+                           type === 'warning' ? 'exclamation-triangle text-warning' : 
+                           'info-circle text-info';
+            
+            toast.innerHTML = '<div class="d-flex align-items-center">' +
+                '<i class="fas fa-' + iconClass + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '<button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>' +
+                '</div>';
+            
+            var container = document.getElementById('toastContainer');
+            if (container) {
+                container.appendChild(toast);
+                
+                setTimeout(function() {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 5000);
+            }
+        }
+        
+        // Initialize cart page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add smooth animations to cart items
+            document.querySelectorAll('.cart-item').forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.classList.add('animate-in');
+            });
+        });
+    </script>
+}

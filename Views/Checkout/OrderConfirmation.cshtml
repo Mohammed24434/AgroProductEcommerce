@@ -1,0 +1,451 @@
+﻿@model AgroProductEcommerce.Models.Order
+
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+@Html.AntiForgeryToken()
+
+<!-- Success Header -->
+<section class="py-5 bg-success bg-gradient text-white">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="success-animation mb-4">
+                    <i class="fas fa-check-circle fa-5x"></i>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">Order Confirmed!</h1>
+                <p class="lead mb-4">Thank you for your purchase. Your order has been successfully placed.</p>
+                <div class="order-number-badge">
+                    <span class="badge bg-light text-dark fs-6 px-4 py-2">
+                        <i class="fas fa-receipt me-2"></i>Order #@Model.Id
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Order Status Timeline -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="order-timeline">
+                    <div class="timeline-item completed">
+                        <div class="timeline-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6>Order Placed</h6>
+                            <p>Your order has been successfully placed</p>
+                            <small class="text-muted">@Model.OrderDate.ToString("MMM dd, yyyy 'at' h:mm tt")</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item active">
+                        <div class="timeline-icon">
+                            <i class="fas fa-cog fa-spin"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6>Processing</h6>
+                            <p>We're preparing your order for shipment</p>
+                            <small class="text-muted">Estimated: 1-2 business days</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-shipping-fast"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6>Shipped</h6>
+                            <p>Your order is on its way</p>
+                            <small class="text-muted">Estimated: 3-5 business days</small>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <div class="timeline-content">
+                            <h6>Delivered</h6>
+                            <p>Your order has been delivered</p>
+                            <small class="text-muted">Estimated: 5-7 business days</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Order Details -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Order Summary -->
+            <div class="col-lg-8">
+                <div class="card order-details-card">
+                    <div class="card-header">
+                        <h4 class="mb-0">
+                            <i class="fas fa-receipt me-2"></i>Order Details
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <!-- Shipping Information -->
+                            <div class="col-md-6">
+                                <div class="info-section">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-shipping-fast me-2"></i>Shipping Information
+                                    </h6>
+                                    <div class="info-content">
+                                        <p><strong>@Model.CustomerName</strong></p>
+                                        <p>@Model.ShippingAddress</p>
+                                        <p>@Model.ShippingCity, @Model.ShippingState @Model.ShippingPostalCode</p>
+                                        <p>@Model.ShippingCountry</p>
+                                        <p><i class="fas fa-phone me-2"></i>@Model.PhoneNumber</p>
+                                        <p><i class="fas fa-envelope me-2"></i>@Model.Email</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Order Information -->
+                            <div class="col-md-6">
+                                <div class="info-section">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-info-circle me-2"></i>Order Information
+                                    </h6>
+                                    <div class="info-content">
+                                        <p><strong>Order Date:</strong> @Model.OrderDate.ToString("MMM dd, yyyy")</p>
+                                        <p><strong>Order Time:</strong> @Model.OrderDate.ToString("h:mm tt")</p>
+                                        <p><strong>Status:</strong> 
+                                            <span class="badge bg-primary">@Model.Status</span>
+                                        </p>
+                                        <p><strong>Payment Method:</strong> Credit Card</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Items -->
+                <div class="card mt-4 order-items-card">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-box me-2"></i>Order Items (@Model.OrderItems.Count items)
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="order-items-list">
+                            @foreach (var item in Model.OrderItems)
+                            {
+                                <div class="order-item">
+                                    <div class="item-image">
+                                        <img src="@item.Product.ImageUrl" alt="@item.Product.Name" 
+                                             onerror="this.src='/images/placeholder.jpg'">
+                                    </div>
+                                    <div class="item-details">
+                                        <h6 class="item-name">@item.Product.Name</h6>
+                                        <p class="item-category">@item.Product.Category</p>
+                                        <div class="item-meta">
+                                            <span class="item-price">$@item.UnitPrice.ToString("F2")</span>
+                                            <span class="item-quantity">Qty: @item.Quantity</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-total">
+                                        <strong>$@((item.UnitPrice * item.Quantity).ToString("F2"))</strong>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Sidebar -->
+            <div class="col-lg-4">
+                <div class="order-summary-sidebar">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-calculator me-2"></i>Order Summary
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="summary-row">
+                                <span>Subtotal:</span>
+                                <span>$@(Model.TotalAmount / 1.08m).ToString("F2")</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Shipping:</span>
+                                <span>$5.99</span>
+                            </div>
+                            <div class="summary-row">
+                                <span>Tax:</span>
+                                <span>$@((Model.TotalAmount / 1.08m * 0.08m).ToString("F2"))</span>
+                            </div>
+                            <hr>
+                            <div class="summary-row total">
+                                <span>Total:</span>
+                                <span>$@Model.TotalAmount.ToString("F2")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Next Steps -->
+                    <div class="card mt-4">
+                        <div class="card-header">
+                            <h6 class="mb-0">
+                                <i class="fas fa-arrow-right me-2"></i>What's Next?
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="next-steps">
+                                <div class="step-item">
+                                    <div class="step-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="step-content">
+                                        <h6>Confirmation Email</h6>
+                                        <p>We've sent a confirmation email to @Model.Email</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-icon">
+                                        <i class="fas fa-truck"></i>
+                                    </div>
+                                    <div class="step-content">
+                                        <h6>Shipping Updates</h6>
+                                        <p>You'll receive tracking information once your order ships</p>
+                                    </div>
+                                </div>
+                                <div class="step-item">
+                                    <div class="step-icon">
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                    <div class="step-content">
+                                        <h6>Delivery</h6>
+                                        <p>Your order will arrive in 3-5 business days</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons mt-4">
+                        <a href="@Url.Action("Index", "Products")" class="btn btn-primary w-100 mb-3">
+                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                        </a>
+                        <a href="@Url.Action("Orders", "Account")" class="btn btn-outline-primary w-100 mb-3">
+                            <i class="fas fa-list me-2"></i>View All Orders
+                        </a>
+                        <button class="btn btn-outline-secondary w-100" onclick="downloadReceipt()">
+                            <i class="fas fa-download me-2"></i>Download Receipt
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="text-center mb-4">
+                    <i class="fas fa-star me-2"></i>You Might Also Like
+                </h3>
+                <div class="row g-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card h-100">
+                            <div class="position-relative">
+                                <img src="/images/Madhi.jpg" class="card-img-top" alt="Madhicho">
+                                <div class="position-absolute top-0 end-0 m-2">
+                                    <span class="badge bg-danger">New</span>
+                                </div>
+                            </div>
+                            <div class="product-card-body">
+                                <h5 class="card-title">Madhicho</h5>
+                                <p class="card-text">Premium quality fresh products.</p>
+                                <div class="product-category">Fresh</div>
+                                <div class="product-price">$24.99</div>
+                                <button class="btn btn-primary w-100" onclick="addToCart(1, 1)">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card h-100">
+                            <div class="position-relative">
+                                <img src="/images/Hirna.jpg" class="card-img-top" alt="Hirna">
+                            </div>
+                            <div class="product-card-body">
+                                <h5 class="card-title">Hirna</h5>
+                                <p class="card-text">Premium quality fresh products.</p>
+                                <div class="product-category">Fresh</div>
+                                <div class="product-price">$59.99</div>
+                                <button class="btn btn-primary w-100" onclick="addToCart(2, 1)">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card h-100">
+                            <div class="position-relative">
+                                <img src="/images/BasmatiGreen2.jpg" class="card-img-top" alt="Basmati Green">
+                            </div>
+                            <div class="product-card-body">
+                                <h5 class="card-title">Basmati Green</h5>
+                                <p class="card-text">Premium quality fresh products.</p>
+                                <div class="product-category">Fresh</div>
+                                <div class="product-price">$34.99</div>
+                                <button class="btn btn-primary w-100" onclick="addToCart(3, 1)">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-3 col-md-6">
+                        <div class="product-card h-100">
+                            <div class="position-relative">
+                                <img src="/images/Henna2.jpg" class="card-img-top" alt="Henna">
+                            </div>
+                            <div class="product-card-body">
+                                <h5 class="card-title">Henna</h5>
+                                <p class="card-text">Premium quality fresh products.</p>
+                                <div class="product-category">Fresh</div>
+                                <div class="product-price">$19.99</div>
+                                <button class="btn btn-primary w-100" onclick="addToCart(4, 1)">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', function() {
+            animateSuccess();
+            animateTimeline();
+        });
+
+        // Success animation
+        function animateSuccess() {
+            var successIcon = document.querySelector('.success-animation i');
+            successIcon.style.transform = 'scale(0)';
+            successIcon.style.opacity = '0';
+            
+            setTimeout(function() {
+                successIcon.style.transition = 'all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+                successIcon.style.transform = 'scale(1)';
+                successIcon.style.opacity = '1';
+            }, 500);
+        }
+
+        // Timeline animation
+        function animateTimeline() {
+            var timelineItems = document.querySelectorAll('.timeline-item');
+            
+            timelineItems.forEach(function(item, index) {
+                setTimeout(function() {
+                    item.classList.add('animate');
+                }, index * 300);
+            });
+        }
+
+        // Download receipt
+        function downloadReceipt() {
+            showToast('Receipt download started...', 'info');
+            
+            // Simulate download
+            setTimeout(function() {
+                showToast('Receipt downloaded successfully!', 'success');
+            }, 2000);
+        }
+
+        // Add to cart function
+        function addToCart(productId, quantity) {
+            var formData = new FormData();
+            formData.append('productId', productId);
+            formData.append('quantity', quantity);
+            
+            fetch('/Cart/AddToCart', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    // Update cart badge if available
+                    if (data.cartItemCount !== undefined) {
+                        updateCartBadge(data.cartItemCount);
+                    }
+                } else {
+                    showToast(data.message || 'Failed to add product to cart.', 'error');
+                }
+            })
+            .catch(function(error) {
+                showToast('An error occurred. Please try again.', 'error');
+            });
+        }
+        
+        // Update cart badge
+        function updateCartBadge(count) {
+            var cartBadge = document.querySelector('.navbar .badge');
+            if (cartBadge) {
+                cartBadge.textContent = count;
+                cartBadge.style.display = count > 0 ? 'block' : 'none';
+            }
+        }
+
+        // Toast notification function
+        function showToast(message, type) {
+            var toast = document.createElement('div');
+            toast.className = 'toast toast-' + type + ' show';
+            
+            var iconClass = type === 'success' ? 'check-circle text-success' : 
+                           type === 'error' ? 'exclamation-circle text-danger' : 
+                           type === 'warning' ? 'exclamation-triangle text-warning' : 
+                           'info-circle text-info';
+            
+            toast.innerHTML = '<div class="d-flex align-items-center">' +
+                '<i class="fas fa-' + iconClass + ' me-2"></i>' +
+                '<span>' + message + '</span>' +
+                '<button type="button" class="btn-close ms-auto" onclick="this.parentElement.parentElement.remove()"></button>' +
+                '</div>';
+            
+            var container = document.getElementById('toastContainer');
+            if (container) {
+                container.appendChild(toast);
+                
+                setTimeout(function() {
+                    if (toast.parentElement) {
+                        toast.remove();
+                    }
+                }, 5000);
+            }
+        }
+    </script>
+}

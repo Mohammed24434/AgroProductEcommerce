@@ -1,0 +1,412 @@
+@model AgroProductEcommerce.Controllers.BuyerDashboardViewModel
+@{
+    ViewData["Title"] = "Buyer Dashboard";
+}
+
+<div class="container-fluid mt-4">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-shopping-bag text-primary me-2"></i>Buyer Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">Welcome back, @Model.BuyerProfile?.CompanyName</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="@Url.Action("CreateRFQ", "Buyer")" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>Create RFQ
+                    </a>
+                    <a href="@Url.Action("BulkOrder", "Buyer")" class="btn btn-outline-primary">
+                        <i class="fas fa-shopping-cart me-2"></i>Bulk Order
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Spent
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                $@Model.TotalSpent.ToString("N2")
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Total Orders
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.TotalOrders
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Active RFQs
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.ActiveRFQCount
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Recommendations
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                @Model.Recommendations.Count
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-star fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Recent Orders -->
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">Recent Orders</h6>
+                    <a href="@Url.Action("Orders", "Account")" class="btn btn-sm btn-primary">
+                        View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Order #</th>
+                                        <th>Date</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentOrders)
+                                    {
+                                        <tr>
+                                            <td>@order.OrderNumber</td>
+                                            <td>@order.OrderDate.ToString("MMM dd, yyyy")</td>
+                                            <td>$@order.TotalAmount.ToString("N2")</td>
+                                            <td>
+                                                <span class="badge badge-@GetStatusBadgeClass(order.Status)">
+                                                    @order.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("OrderDetails", "Account", new { id = order.Id })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-4">
+                            <i class="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
+                            <p class="text-muted">No orders yet. Start by creating an RFQ or placing a bulk order.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("CreateRFQ", "Buyer")" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create RFQ
+                        </a>
+                        <a href="@Url.Action("BulkOrder", "Buyer")" class="btn btn-info">
+                            <i class="fas fa-shopping-cart me-2"></i>Bulk Order
+                        </a>
+                        <a href="@Url.Action("BrowseRFQs", "Buyer")" class="btn btn-secondary">
+                            <i class="fas fa-search me-2"></i>Browse RFQs
+                        </a>
+                        <a href="@Url.Action("Profile", "Buyer")" class="btn btn-success">
+                            <i class="fas fa-user me-2"></i>Update Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Business Profile Summary -->
+            <div class="card shadow mt-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Business Profile</h6>
+                </div>
+                <div class="card-body">
+                    @if (Model.BuyerProfile != null)
+                    {
+                        <div class="mb-3">
+                            <strong>Company:</strong> @Model.BuyerProfile.CompanyName
+                        </div>
+                        <div class="mb-3">
+                            <strong>Industry:</strong> @Model.BuyerProfile.Industry
+                        </div>
+                        <div class="mb-3">
+                            <strong>Total Orders:</strong> @Model.BuyerProfile.TotalOrders
+                        </div>
+                        <div class="mb-3">
+                            <strong>Total Spent:</strong> $@Model.BuyerProfile.TotalSpent.ToString("N2")
+                        </div>
+                        <div class="mb-3">
+                            <strong>Active RFQs:</strong> @Model.BuyerProfile.ActiveRFQs
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center py-3">
+                            <p class="text-muted">Complete your business profile to get started.</p>
+                            <a href="@Url.Action("Profile", "Buyer")" class="btn btn-primary btn-sm">
+                                Complete Profile
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active RFQs -->
+    @if (Model.ActiveRFQs.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">Active RFQs</h6>
+                        <a href="@Url.Action("MyRFQs", "Buyer")" class="btn btn-sm btn-primary">
+                            View All
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Quantity</th>
+                                        <th>Responses</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var rfq in Model.ActiveRFQs)
+                                    {
+                                        <tr>
+                                            <td>@rfq.Title</td>
+                                            <td>@rfq.Category</td>
+                                            <td>@rfq.Quantity @rfq.Unit</td>
+                                            <td>@rfq.ResponseCount</td>
+                                            <td>
+                                                <span class="badge badge-@GetRFQStatusBadgeClass(rfq.Status)">
+                                                    @rfq.Status
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="@Url.Action("RFQDetails", "Buyer", new { id = rfq.Id })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    View Details
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- Personalized Recommendations -->
+    @if (Model.Recommendations.Any())
+    {
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            <i class="fas fa-star text-warning me-2"></i>Recommended for You
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            @foreach (var product in Model.Recommendations.Take(6))
+                            {
+                                <div class="col-lg-4 col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" style="height: 200px; object-fit: cover;">
+                                        <div class="card-body">
+                                            <h6 class="card-title">@product.Name</h6>
+                                            <p class="card-text text-muted">@product.Description?.Substring(0, Math.Min(100, product.Description.Length))...</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="h6 mb-0">$@product.Price.ToString("N2")</span>
+                                                <div class="text-warning">
+                                                    @for (int i = 0; i < 5; i++)
+                                                    {
+                                                        if (i < product.Rating)
+                                                        {
+                                                            <i class="fas fa-star"></i>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="far fa-star"></i>
+                                                        }
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer">
+                                            <div class="d-flex justify-content-between">
+                                                <a href="@Url.Action("Details", "Products", new { id = product.Id })" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    View Details
+                                                </a>
+                                                <button class="btn btn-sm btn-primary add-to-cart-btn" 
+                                                        data-product-id="@product.Id">
+                                                    <i class="fas fa-cart-plus"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle add to cart button clicks
+            $('.add-to-cart-btn').click(function() {
+                var productId = $(this).data('product-id');
+                
+                $.ajax({
+                    url: '@Url.Action("AddToCart", "Cart")',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: 1
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update cart count
+                            $('.cart-count').text(response.cartCount);
+                            alert('Product added to cart successfully!');
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred while adding the product to cart');
+                    }
+                });
+            });
+        });
+    </script>
+}
+
+@functions {
+    private string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "warning",
+            OrderStatus.Confirmed => "info",
+            OrderStatus.Processing => "primary",
+            OrderStatus.Shipped => "success",
+            OrderStatus.Delivered => "success",
+            OrderStatus.Cancelled => "danger",
+            OrderStatus.Refunded => "secondary",
+            OrderStatus.Disputed => "danger",
+            _ => "secondary"
+        };
+    }
+
+    private string GetRFQStatusBadgeClass(RFQStatus status)
+    {
+        return status switch
+        {
+            RFQStatus.Draft => "secondary",
+            RFQStatus.Published => "primary",
+            RFQStatus.Responding => "info",
+            RFQStatus.Awarded => "success",
+            RFQStatus.Expired => "warning",
+            RFQStatus.Cancelled => "danger",
+            _ => "secondary"
+        };
+    }
+} 
